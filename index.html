@@ -1,0 +1,1567 @@
+import React, { useState, useEffect } from 'react';
+import { Calendar, BookOpen, Code, Target, Plus, Edit2, Save, X, ChevronLeft, ChevronRight, GraduationCap, Briefcase, PlayCircle, CheckCircle, AlertCircle, Lightbulb, TrendingUp } from 'lucide-react';
+
+const AICareerTracker = () => {
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [tasks, setTasks] = useState({});
+  const [editingTask, setEditingTask] = useState(null);
+  const [pythonVocab, setPythonVocab] = useState([]);
+  const [webVocab, setWebVocab] = useState([]);
+  const [newTerm, setNewTerm] = useState({ term: '', definition: '', rationale: '', category: 'python' });
+  const [currentExercise, setCurrentExercise] = useState(0);
+  const [userCode, setUserCode] = useState('');
+  const [feedback, setFeedback] = useState(null);
+  const [showSolution, setShowSolution] = useState(false);
+
+  // Load data from storage on mount
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Python coding exercises with step-by-step tutorials
+  const pythonExercises = [
+    {
+      title: "Variables and Print Statements",
+      scenario: "You're building a student information system. Create a script that stores and displays a student's information.",
+      instructions: [
+        "Create a variable called 'student_name' and assign it your name",
+        "Create a variable called 'age' and assign it a number",
+        "Create a variable called 'program' and set it to 'Applied AI'",
+        "Use print() to display each variable on separate lines",
+        "Add a formatted message that combines all variables"
+      ],
+      example: `# Student Information System Example
+student_name = "Alex Johnson"
+age = 28
+program = "Applied AI"
+gpa = 3.8
+
+# Display individual information
+print("Student Name:", student_name)
+print("Age:", age)
+print("Program:", program)
+print("GPA:", gpa)
+
+# Formatted message
+print(f"{student_name} is {age} years old and studying {program} with a {gpa} GPA")`,
+      practicePrompt: "Now create a similar script for a teacher profile with: teacher_name, subject, years_experience, and school_name",
+      solution: `# Teacher Profile Script
+teacher_name = "Dr. Sarah Williams"
+subject = "Computer Science"
+years_experience = 12
+school_name = "Tech High School"
+
+print("Teacher Name:", teacher_name)
+print("Subject:", subject)
+print("Years of Experience:", years_experience)
+print("School:", school_name)
+
+print(f"{teacher_name} teaches {subject} at {school_name} with {years_experience} years of experience")`,
+      tips: [
+        "Use descriptive variable names",
+        "String values need quotes, numbers don't",
+        "f-strings (f'text {variable}') make formatting easier"
+      ]
+    },
+    {
+      title: "Lists and Loops",
+      scenario: "You're managing a reading list for your AI course. Create a script to organize and display books.",
+      instructions: [
+        "Create a list called 'books' with at least 4 book titles",
+        "Use a for loop to print each book",
+        "Add line numbers to each book",
+        "Calculate and print the total number of books"
+      ],
+      example: `# Reading List Manager
+books = [
+    "AI Next Step Prompt Engineering",
+    "The Science of Self-Discipline",
+    "HTML & CSS QuickStart Guide",
+    "Python Crash Course"
+]
+
+# Display all books with numbers
+print("My AI Learning Reading List:")
+print("-" * 40)
+
+for index, book in enumerate(books, 1):
+    print(f"{index}. {book}")
+
+print("-" * 40)
+print(f"Total books: {len(books)}")
+
+# Add a new book
+books.append("Deep Learning with Python")
+print(f"\\nAfter adding a new book: {len(books)} total books")`,
+      practicePrompt: "Create a script for your weekly study topics list. Include at least 5 topics, display them with numbers, and add a new topic to the list.",
+      solution: `# Weekly Study Topics
+topics = [
+    "Python Functions",
+    "Machine Learning Basics",
+    "Web Scraping",
+    "Data Visualization",
+    "Neural Networks"
+]
+
+print("This Week's Study Topics:")
+print("=" * 50)
+
+for number, topic in enumerate(topics, 1):
+    print(f"Day {number}: {topic}")
+
+print("=" * 50)
+print(f"Total topics to cover: {len(topics)}")
+
+# Add weekend bonus topic
+topics.append("REST APIs")
+print(f"\\nBonus weekend topic added!")
+print(f"New total: {len(topics)} topics")`,
+      tips: [
+        "Lists use square brackets []",
+        "enumerate() gives you both index and value",
+        "len() returns the number of items in a list"
+      ]
+    },
+    {
+      title: "Functions and Return Values",
+      scenario: "Create a grade calculator for your courses to track your academic progress.",
+      instructions: [
+        "Define a function called calculate_average() that takes a list of grades",
+        "Calculate the average of the grades",
+        "Return the average",
+        "Call the function with different grade lists",
+        "Print the results with descriptive messages"
+      ],
+      example: `# Grade Calculator System
+def calculate_average(grades):
+    """Calculate the average of a list of grades"""
+    total = sum(grades)
+    average = total / len(grades)
+    return average
+
+def get_letter_grade(average):
+    """Convert numeric grade to letter grade"""
+    if average >= 90:
+        return "A"
+    elif average >= 80:
+        return "B"
+    elif average >= 70:
+        return "C"
+    elif average >= 60:
+        return "D"
+    else:
+        return "F"
+
+# Test with different courses
+ai_course_grades = [92, 88, 95, 90]
+web_dev_grades = [85, 87, 83, 89, 91]
+
+ai_avg = calculate_average(ai_course_grades)
+web_avg = calculate_average(web_dev_grades)
+
+print("AI Course:")
+print(f"  Grades: {ai_course_grades}")
+print(f"  Average: {ai_avg:.2f}")
+print(f"  Letter Grade: {get_letter_grade(ai_avg)}")
+
+print("\\nWeb Development Course:")
+print(f"  Grades: {web_dev_grades}")
+print(f"  Average: {web_avg:.2f}")
+print(f"  Letter Grade: {get_letter_grade(web_avg)}")`,
+      practicePrompt: "Create a function called calculate_study_hours() that takes a list of daily study hours and returns the total and average. Test it with a week's worth of study time.",
+      solution: `# Study Time Tracker
+def calculate_study_hours(daily_hours):
+    """Calculate total and average study hours"""
+    total_hours = sum(daily_hours)
+    average_hours = total_hours / len(daily_hours)
+    return total_hours, average_hours
+
+def study_report(week_name, hours):
+    """Generate a study report for the week"""
+    total, average = calculate_study_hours(hours)
+    print(f"\\n{week_name} Study Report:")
+    print(f"  Daily hours: {hours}")
+    print(f"  Total hours: {total}")
+    print(f"  Average per day: {average:.2f} hours")
+    
+    if average >= 3:
+        print("  Status: Excellent progress! 🌟")
+    elif average >= 2:
+        print("  Status: Good effort! 👍")
+    else:
+        print("  Status: Try to increase study time")
+
+# Weekly study tracking
+week1 = [2.5, 3, 2, 4, 1.5, 3.5, 2]
+week2 = [3, 3.5, 2.5, 4, 3, 4.5, 3]
+
+study_report("Week 1", week1)
+study_report("Week 2", week2)`,
+      tips: [
+        "Functions start with 'def' keyword",
+        "Use docstrings to describe what functions do",
+        "Functions can return multiple values",
+        ":.2f formats numbers to 2 decimal places"
+      ]
+    },
+    {
+      title: "Dictionaries and Data Organization",
+      scenario: "Build a learning resources tracker to organize your study materials by topic.",
+      instructions: [
+        "Create a dictionary to store learning resources by topic",
+        "Each topic should have a list of resources",
+        "Add functions to add resources and display them",
+        "Count total resources across all topics"
+      ],
+      example: `# Learning Resources Tracker
+resources = {
+    "Python": ["CodeAcademy Python Course", "Python Crash Course Book"],
+    "Machine Learning": ["DeepLearning.AI Course", "Coursera ML Specialization"],
+    "Web Development": ["HTML & CSS Guide", "FreeCodeCamp"],
+    "Prompt Engineering": ["AI Next Step Book", "OpenAI Documentation"]
+}
+
+def add_resource(topic, resource_name):
+    """Add a new resource to a topic"""
+    if topic in resources:
+        resources[topic].append(resource_name)
+    else:
+        resources[topic] = [resource_name]
+    print(f"Added '{resource_name}' to {topic}")
+
+def display_resources():
+    """Display all resources organized by topic"""
+    print("\\n=== MY LEARNING RESOURCES ===")
+    total_count = 0
+    
+    for topic, resource_list in resources.items():
+        print(f"\\n{topic} ({len(resource_list)} resources):")
+        for idx, resource in enumerate(resource_list, 1):
+            print(f"  {idx}. {resource}")
+        total_count += len(resource_list)
+    
+    print(f"\\n{'='*35}")
+    print(f"Total Resources: {total_count}")
+
+# Display current resources
+display_resources()
+
+# Add new resources
+add_resource("Python", "Automate the Boring Stuff")
+add_resource("Data Science", "Kaggle Courses")
+
+# Display updated list
+display_resources()`,
+      practicePrompt: "Create a course schedule tracker using a dictionary. Each day of the week should have a list of tasks. Include functions to add tasks and display the schedule.",
+      solution: `# Weekly Course Schedule Tracker
+schedule = {
+    "Monday": ["Read AI book - 30 min", "Python practice - 1 hour"],
+    "Tuesday": ["HTML/CSS tutorial", "CodeAcademy lesson"],
+    "Wednesday": ["ML course video", "Practice coding"],
+    "Thursday": ["AI Class 5:30-8:00 PM"],
+    "Friday": ["Review week's notes", "Build mini-project"],
+    "Saturday": ["Deep Learning course", "Portfolio work"],
+    "Sunday": ["Reading day", "Plan next week"]
+}
+
+def add_task(day, task):
+    """Add a task to a specific day"""
+    if day in schedule:
+        schedule[day].append(task)
+        print(f"✓ Added task to {day}: {task}")
+    else:
+        print(f"Invalid day: {day}")
+
+def display_schedule():
+    """Display the complete weekly schedule"""
+    print("\\n" + "="*50)
+    print("MY WEEKLY AI LEARNING SCHEDULE")
+    print("="*50)
+    
+    total_tasks = 0
+    for day, tasks in schedule.items():
+        print(f"\\n{day}:")
+        for i, task in enumerate(tasks, 1):
+            print(f"  {i}. {task}")
+        total_tasks += len(tasks)
+    
+    print("\\n" + "="*50)
+    print(f"Total weekly tasks: {total_tasks}")
+    print("="*50)
+
+def get_daily_tasks(day):
+    """Get tasks for a specific day"""
+    if day in schedule:
+        print(f"\\n{day}'s Tasks:")
+        for task in schedule[day]:
+            print(f"  • {task}")
+    else:
+        print(f"No schedule for {day}")
+
+# Display full schedule
+display_schedule()
+
+# Add some tasks
+add_task("Monday", "Study NumPy arrays")
+add_task("Wednesday", "Work on portfolio project")
+
+# Check specific day
+get_daily_tasks("Thursday")`,
+      tips: [
+        "Dictionaries use curly braces {} with key:value pairs",
+        "Access values using dictionary[key]",
+        ".items() gives you both keys and values in a loop",
+        "Check if a key exists with 'if key in dictionary'"
+      ]
+    },
+    {
+      title: "File Handling and Data Persistence",
+      scenario: "Create a progress journal that saves your daily learning achievements to a file.",
+      instructions: [
+        "Create a function to write journal entries to a file",
+        "Include date, topic studied, and hours spent",
+        "Create a function to read and display all entries",
+        "Add summary statistics"
+      ],
+      example: `# Learning Progress Journal
+from datetime import datetime
+
+def add_journal_entry(topic, hours, notes):
+    """Add a new entry to the learning journal"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    
+    with open("learning_journal.txt", "a") as file:
+        file.write(f"\\n{'='*50}\\n")
+        file.write(f"Date: {timestamp}\\n")
+        file.write(f"Topic: {topic}\\n")
+        file.write(f"Hours: {hours}\\n")
+        file.write(f"Notes: {notes}\\n")
+    
+    print(f"✓ Journal entry added for {topic}")
+
+def read_journal():
+    """Read and display all journal entries"""
+    try:
+        with open("learning_journal.txt", "r") as file:
+            content = file.read()
+            print("\\n=== MY LEARNING JOURNAL ===")
+            print(content)
+    except FileNotFoundError:
+        print("No journal entries yet. Start learning!")
+
+def get_total_hours():
+    """Calculate total hours from journal"""
+    total = 0
+    try:
+        with open("learning_journal.txt", "r") as file:
+            for line in file:
+                if line.startswith("Hours: "):
+                    hours = float(line.split(": ")[1])
+                    total += hours
+        print(f"\\nTotal learning hours: {total}")
+        return total
+    except FileNotFoundError:
+        return 0
+
+# Example usage
+add_journal_entry("Python Functions", 2.5, "Learned about return values and parameters")
+add_journal_entry("Machine Learning Basics", 3.0, "Studied linear regression concepts")
+add_journal_entry("Web Development", 1.5, "Built responsive navigation bar")
+
+# Read all entries
+read_journal()
+
+# Get summary
+get_total_hours()`,
+      practicePrompt: "Create a vocabulary tracker that saves new terms to a file. Include functions to add terms, display all terms, and count how many you've learned.",
+      solution: `# AI Vocabulary Tracker
+def add_vocabulary(term, definition, category):
+    """Add a new vocabulary term to the file"""
+    with open("ai_vocabulary.txt", "a") as file:
+        file.write(f"\\nTerm: {term}\\n")
+        file.write(f"Definition: {definition}\\n")
+        file.write(f"Category: {category}\\n")
+        file.write(f"{'-'*40}\\n")
+    
+    print(f"✓ Added: {term} ({category})")
+
+def display_vocabulary():
+    """Display all vocabulary terms"""
+    try:
+        with open("ai_vocabulary.txt", "r") as file:
+            print("\\n" + "="*50)
+            print("MY AI VOCABULARY LIST")
+            print("="*50)
+            print(file.read())
+    except FileNotFoundError:
+        print("No vocabulary terms yet!")
+
+def count_terms():
+    """Count total number of terms"""
+    count = 0
+    try:
+        with open("ai_vocabulary.txt", "r") as file:
+            for line in file:
+                if line.startswith("Term: "):
+                    count += 1
+        print(f"\\nTotal terms learned: {count}")
+        return count
+    except FileNotFoundError:
+        return 0
+
+def search_term(search_word):
+    """Search for a specific term"""
+    found = False
+    try:
+        with open("ai_vocabulary.txt", "r") as file:
+            lines = file.readlines()
+            for i, line in enumerate(lines):
+                if search_word.lower() in line.lower():
+                    print(f"\\nFound: {line.strip()}")
+                    if i+1 < len(lines):
+                        print(lines[i+1].strip())
+                    found = True
+    except FileNotFoundError:
+        print("No vocabulary file found")
+    
+    if not found:
+        print(f"'{search_word}' not found in vocabulary")
+
+# Add vocabulary terms
+add_vocabulary("Neural Network", "Computing system inspired by biological neural networks", "Machine Learning")
+add_vocabulary("API", "Application Programming Interface for software interaction", "Programming")
+add_vocabulary("Gradient Descent", "Optimization algorithm for machine learning", "Machine Learning")
+
+# Display all terms
+display_vocabulary()
+
+# Count and search
+count_terms()
+search_term("API")`,
+      tips: [
+        "Use 'with open()' for automatic file closing",
+        "'a' mode appends, 'r' reads, 'w' writes (overwrites)",
+        "Handle FileNotFoundError for files that may not exist",
+        "split() and startswith() are useful for parsing files"
+      ]
+    }
+  ];
+
+  const loadData = async () => {
+    try {
+      const tasksData = await window.storage.get('ai-career-tasks');
+      const pythonData = await window.storage.get('python-vocab');
+      const webData = await window.storage.get('web-vocab');
+      
+      if (tasksData?.value) setTasks(JSON.parse(tasksData.value));
+      if (pythonData?.value) setPythonVocab(JSON.parse(pythonData.value));
+      if (webData?.value) setWebVocab(JSON.parse(webData.value));
+    } catch (error) {
+      // Initialize with default data
+      initializeDefaultData();
+    }
+  };
+
+  const initializeDefaultData = () => {
+    const defaultPython = [
+      { term: 'Variable', definition: 'A container for storing data values', rationale: 'Essential for managing and manipulating data in programs' },
+      { term: 'Function', definition: 'A reusable block of code that performs a specific task', rationale: 'Promotes code reusability and organization' },
+      { term: 'List', definition: 'An ordered, mutable collection of items', rationale: 'Fundamental data structure for storing multiple values' },
+      { term: 'Dictionary', definition: 'A collection of key-value pairs', rationale: 'Efficient for storing and retrieving related data' },
+      { term: 'Loop', definition: 'A control structure that repeats a block of code', rationale: 'Automates repetitive tasks efficiently' },
+      { term: 'Class', definition: 'A blueprint for creating objects with attributes and methods', rationale: 'Foundation of object-oriented programming' },
+      { term: 'Import', definition: 'Statement to include external modules or libraries', rationale: 'Extends Python capabilities with pre-built functionality' },
+      { term: 'DataFrame', definition: 'A 2D labeled data structure (pandas)', rationale: 'Critical for data analysis and manipulation in ML' },
+      { term: 'NumPy Array', definition: 'Multi-dimensional array for numerical computing', rationale: 'Optimized for mathematical operations in AI/ML' },
+      { term: 'TensorFlow', definition: 'Open-source machine learning framework', rationale: 'Industry-standard for building neural networks' }
+    ];
+
+    const defaultWeb = [
+      { term: 'HTML', definition: 'HyperText Markup Language - structure of web pages', rationale: 'Foundation of all web content and applications' },
+      { term: 'CSS', definition: 'Cascading Style Sheets - styling and layout', rationale: 'Essential for creating visually appealing interfaces' },
+      { term: 'Flexbox', definition: 'CSS layout model for flexible responsive design', rationale: 'Simplifies complex layouts and alignment' },
+      { term: 'Grid', definition: 'CSS layout system for 2D layouts', rationale: 'Powerful tool for creating complex page structures' },
+      { term: 'Responsive Design', definition: 'Approach to make websites work on all devices', rationale: 'Critical for modern user experience across devices' },
+      { term: 'Semantic HTML', definition: 'Using HTML elements that convey meaning', rationale: 'Improves accessibility and SEO' },
+      { term: 'Media Query', definition: 'CSS technique to apply styles based on device characteristics', rationale: 'Enables responsive breakpoints for different screens' },
+      { term: 'DOM', definition: 'Document Object Model - programming interface for HTML', rationale: 'Allows dynamic manipulation of web pages' },
+      { term: 'CSS Selector', definition: 'Pattern to select HTML elements for styling', rationale: 'Precise control over which elements receive styles' },
+      { term: 'Box Model', definition: 'CSS concept of content, padding, border, and margin', rationale: 'Understanding spacing and layout calculations' }
+    ];
+
+    setPythonVocab(defaultPython);
+    setWebVocab(defaultWeb);
+    saveVocab(defaultPython, defaultWeb);
+    
+    // Initialize with book reading schedule
+    initializeBookSchedule();
+  };
+  
+  const initializeBookSchedule = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    
+    const defaultSchedule = {};
+    
+    // Books to schedule with rotation
+    const books = [
+      { name: "The Science of Self-Discipline (30 min)", time: "6:00 PM", days: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28] },
+      { name: "AI Next Step Prompt Engineering (30 min)", time: "7:00 PM", days: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29] },
+      { name: "HTML & CSS QuickStart Guide (30 min)", time: "6:30 PM", days: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30] }
+    ];
+    
+    // Add book reading sessions to calendar
+    books.forEach(book => {
+      book.days.forEach(day => {
+        const date = new Date(year, month, day);
+        const dateKey = date.toISOString().split('T')[0];
+        
+        if (!defaultSchedule[dateKey]) {
+          defaultSchedule[dateKey] = [];
+        }
+        
+        defaultSchedule[dateKey].push({
+          id: Date.now() + Math.random(),
+          text: `📚 ${book.name} @ ${book.time}`,
+          completed: false
+        });
+      });
+    });
+    
+    // Add daily study reminders (every weekday)
+    for (let day = 1; day <= 31; day++) {
+      const date = new Date(year, month, day);
+      if (date.getMonth() !== month) break; // Stop if we've moved to next month
+      
+      const dateKey = date.toISOString().split('T')[0];
+      const dayOfWeek = date.getDay();
+      
+      // Skip Thursdays (AI class day) for some tasks
+      if (dayOfWeek !== 0 && dayOfWeek !== 4) { // Not Sunday or Thursday
+        if (!defaultSchedule[dateKey]) {
+          defaultSchedule[dateKey] = [];
+        }
+        
+        defaultSchedule[dateKey].push({
+          id: Date.now() + Math.random() + 1,
+          text: "💻 CodeAcademy lesson (1 hour)",
+          completed: false
+        });
+      }
+      
+      // Weekend project work
+      if (dayOfWeek === 6 || dayOfWeek === 0) { // Saturday or Sunday
+        if (!defaultSchedule[dateKey]) {
+          defaultSchedule[dateKey] = [];
+        }
+        
+        defaultSchedule[dateKey].push({
+          id: Date.now() + Math.random() + 2,
+          text: "🚀 Work on personal AI project (2 hours)",
+          completed: false
+        });
+      }
+    }
+    
+    saveTasks(defaultSchedule);
+  };
+
+  const saveVocab = async (python, web) => {
+    try {
+      await window.storage.set('python-vocab', JSON.stringify(python));
+      await window.storage.set('web-vocab', JSON.stringify(web));
+    } catch (error) {
+      console.error('Error saving vocabulary:', error);
+    }
+  };
+
+  const saveTasks = async (newTasks) => {
+    try {
+      await window.storage.set('ai-career-tasks', JSON.stringify(newTasks));
+      setTasks(newTasks);
+    } catch (error) {
+      console.error('Error saving tasks:', error);
+    }
+  };
+
+  const addTask = (date, task) => {
+    const dateKey = date.toISOString().split('T')[0];
+    const newTasks = { ...tasks };
+    if (!newTasks[dateKey]) newTasks[dateKey] = [];
+    newTasks[dateKey].push({ id: Date.now(), text: task, completed: false });
+    saveTasks(newTasks);
+    setEditingTask(null);
+  };
+
+  const toggleTask = (date, taskId) => {
+    const dateKey = date.toISOString().split('T')[0];
+    const newTasks = { ...tasks };
+    const taskIndex = newTasks[dateKey]?.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+      newTasks[dateKey][taskIndex].completed = !newTasks[dateKey][taskIndex].completed;
+      saveTasks(newTasks);
+    }
+  };
+
+  const deleteTask = (date, taskId) => {
+    const dateKey = date.toISOString().split('T')[0];
+    const newTasks = { ...tasks };
+    newTasks[dateKey] = newTasks[dateKey].filter(t => t.id !== taskId);
+    saveTasks(newTasks);
+  };
+
+  const analyzeCode = async () => {
+    if (!userCode.trim()) {
+      setFeedback({ type: 'error', message: 'Please write some code first!' });
+      return;
+    }
+
+    setFeedback({ type: 'loading', message: 'Analyzing your code...' });
+
+    const exercise = pythonExercises[currentExercise];
+    
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [
+            {
+              role: "user",
+              content: `You are a Python programming tutor helping a student learning AI development. Analyze this student's code and provide constructive feedback.
+
+EXERCISE: ${exercise.title}
+SCENARIO: ${exercise.scenario}
+PRACTICE TASK: ${exercise.practicePrompt}
+
+STUDENT'S CODE:
+\`\`\`python
+${userCode}
+\`\`\`
+
+Provide feedback in this format:
+1. What they did well (be specific and encouraging)
+2. Areas for improvement (constructive suggestions)
+3. Common mistakes to avoid
+4. Next steps to enhance the code
+
+Be encouraging and focus on learning. Keep feedback concise (3-4 sentences per section).`
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      const feedbackText = data.content[0].text;
+      
+      setFeedback({ type: 'success', message: feedbackText });
+    } catch (error) {
+      setFeedback({ 
+        type: 'error', 
+        message: 'Error analyzing code. Make sure your code is valid Python and try again.' 
+      });
+    }
+  };
+
+  const addVocabTerm = () => {
+    if (newTerm.term && newTerm.definition) {
+      const term = { ...newTerm };
+      if (term.category === 'python') {
+        const updated = [...pythonVocab, term];
+        setPythonVocab(updated);
+        saveVocab(updated, webVocab);
+      } else {
+        const updated = [...webVocab, term];
+        setWebVocab(updated);
+        saveVocab(pythonVocab, updated);
+      }
+      setNewTerm({ term: '', definition: '', rationale: '', category: 'python' });
+    }
+  };
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    return { daysInMonth, startingDayOfWeek };
+  };
+
+  const NavBar = () => (
+    <nav className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <GraduationCap className="w-8 h-8" />
+            <h1 className="text-2xl font-bold">AI Career Development Tracker</h1>
+          </div>
+          <Briefcase className="w-8 h-8" />
+        </div>
+        <div className="flex space-x-2 overflow-x-auto">
+          {[
+            { id: 'dashboard', label: 'Dashboard', icon: Calendar },
+            { id: 'practice', label: 'Practice Lab', icon: Code },
+            { id: 'vocabulary', label: 'Vocabulary', icon: BookOpen },
+            { id: 'foundations', label: 'Foundations', icon: Lightbulb },
+            { id: 'resources', label: 'Resources', icon: Target }
+          ].map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setCurrentPage(id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                currentPage === id 
+                  ? 'bg-white text-blue-600 shadow-md' 
+                  : 'bg-blue-700 hover:bg-blue-800'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="whitespace-nowrap">{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+
+  const CalendarView = () => {
+    const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentMonth);
+    const monthYear = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    const previousMonth = () => {
+      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+    };
+
+    const nextMonth = () => {
+      setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+    };
+
+    const isThursday = (day) => {
+      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+      return date.getDay() === 4;
+    };
+
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={previousMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <ChevronLeft className="w-6 h-6 text-blue-600" />
+          </button>
+          <h2 className="text-2xl font-bold text-gray-800">{monthYear}</h2>
+          <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <ChevronRight className="w-6 h-6 text-blue-600" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-7 gap-2 mb-2">
+          {days.map(day => (
+            <div key={day} className="text-center font-semibold text-gray-600 text-sm py-2">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-2">
+          {Array.from({ length: startingDayOfWeek }).map((_, i) => (
+            <div key={`empty-${i}`} className="aspect-square" />
+          ))}
+          
+          {Array.from({ length: daysInMonth }).map((_, i) => {
+            const day = i + 1;
+            const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+            const dateKey = date.toISOString().split('T')[0];
+            const dayTasks = tasks[dateKey] || [];
+            const isToday = new Date().toDateString() === date.toDateString();
+            const thursday = isThursday(day);
+
+            return (
+              <div
+                key={day}
+                className={`aspect-square border-2 rounded-lg p-2 transition-all hover:shadow-md ${
+                  isToday ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                } ${thursday ? 'bg-purple-50' : 'bg-white'}`}
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className={`text-sm font-semibold ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>
+                    {day}
+                  </span>
+                  <button
+                    onClick={() => setEditingTask(date)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                </div>
+                {thursday && (
+                  <div className="text-xs bg-purple-200 text-purple-800 px-1 py-0.5 rounded mb-1">
+                    AI Class 5:30-8PM
+                  </div>
+                )}
+                <div className="space-y-1">
+                  {dayTasks.slice(0, 2).map(task => (
+                    <div
+                      key={task.id}
+                      className={`text-xs p-1 rounded cursor-pointer ${
+                        task.completed ? 'bg-green-100 text-green-800 line-through' : 'bg-gray-100 text-gray-700'
+                      }`}
+                      onClick={() => toggleTask(date, task.id)}
+                    >
+                      {task.text.length > 20 ? task.text.substring(0, 20) + '...' : task.text}
+                    </div>
+                  ))}
+                  {dayTasks.length > 2 && (
+                    <div className="text-xs text-blue-600">+{dayTasks.length - 2} more</div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {editingTask && (
+          <TaskModal
+            date={editingTask}
+            tasks={tasks[editingTask.toISOString().split('T')[0]] || []}
+            onClose={() => setEditingTask(null)}
+            onAdd={addTask}
+            onToggle={toggleTask}
+            onDelete={deleteTask}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const TaskModal = ({ date, tasks, onClose, onAdd, onToggle, onDelete }) => {
+    const [newTaskText, setNewTaskText] = useState('');
+
+    const handleAdd = () => {
+      if (newTaskText.trim()) {
+        onAdd(date, newTaskText);
+        setNewTaskText('');
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-gray-800">
+              {date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </h3>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="mb-4">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                value={newTaskText}
+                onChange={(e) => setNewTaskText(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+                placeholder="Add new task..."
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                onClick={handleAdd}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {tasks.map(task => (
+              <div
+                key={task.id}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div
+                  className="flex-1 cursor-pointer"
+                  onClick={() => onToggle(date, task.id)}
+                >
+                  <span className={task.completed ? 'line-through text-gray-500' : 'text-gray-800'}>
+                    {task.text}
+                  </span>
+                </div>
+                <button
+                  onClick={() => onDelete(date, task.id)}
+                  className="text-red-500 hover:text-red-700 ml-2"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const PracticeLabPage = () => {
+    const exercise = pythonExercises[currentExercise];
+    
+    return (
+      <div className="space-y-6">
+        {/* Progress Tracker */}
+        <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-3xl font-bold mb-2">Python Practice Lab</h2>
+              <p className="text-green-100">Learn by doing - Build your coding skills step by step</p>
+            </div>
+            <TrendingUp className="w-12 h-12" />
+          </div>
+          <div className="bg-white bg-opacity-20 rounded-lg p-4">
+            <div className="flex justify-between text-sm mb-2">
+              <span>Progress to August 2026 Goal</span>
+              <span>{currentExercise + 1} / {pythonExercises.length} exercises</span>
+            </div>
+            <div className="w-full bg-white bg-opacity-30 rounded-full h-3">
+              <div 
+                className="bg-white rounded-full h-3 transition-all duration-500"
+                style={{ width: `${((currentExercise + 1) / pythonExercises.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Exercise Selection */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Choose Your Exercise</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {pythonExercises.map((ex, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setCurrentExercise(idx);
+                  setUserCode('');
+                  setFeedback(null);
+                  setShowSolution(false);
+                }}
+                className={`p-4 rounded-lg border-2 text-left transition-all ${
+                  currentExercise === idx
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold text-gray-800">Exercise {idx + 1}</span>
+                  <Code className="w-5 h-5 text-blue-600" />
+                </div>
+                <p className="text-sm text-gray-600">{ex.title}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Current Exercise */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <Lightbulb className="w-8 h-8 text-yellow-500" />
+            <h3 className="text-2xl font-bold text-gray-800">{exercise.title}</h3>
+          </div>
+          
+          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+            <h4 className="font-bold text-blue-800 mb-2">Scenario</h4>
+            <p className="text-gray-700">{exercise.scenario}</p>
+          </div>
+
+          <div className="mb-6">
+            <h4 className="font-bold text-gray-800 mb-3">Step-by-Step Instructions:</h4>
+            <ol className="space-y-2">
+              {exercise.instructions.map((instruction, idx) => (
+                <li key={idx} className="flex items-start space-x-3">
+                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    {idx + 1}
+                  </span>
+                  <span className="text-gray-700 pt-0.5">{instruction}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* Example Code */}
+          <div className="bg-gray-900 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-bold text-green-400">Example Code:</h4>
+              <PlayCircle className="w-5 h-5 text-green-400" />
+            </div>
+            <pre className="text-green-300 text-sm overflow-x-auto">
+              <code>{exercise.example}</code>
+            </pre>
+          </div>
+
+          {/* Tips */}
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+            <h4 className="font-bold text-yellow-800 mb-2 flex items-center space-x-2">
+              <Lightbulb className="w-5 h-5" />
+              <span>Pro Tips:</span>
+            </h4>
+            <ul className="space-y-1">
+              {exercise.tips.map((tip, idx) => (
+                <li key={idx} className="text-gray-700 text-sm flex items-start space-x-2">
+                  <span className="text-yellow-600">•</span>
+                  <span>{tip}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Practice Area */}
+          <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-4">
+            <h4 className="font-bold text-purple-800 mb-3">Your Turn - Practice Task:</h4>
+            <p className="text-gray-700 mb-4">{exercise.practicePrompt}</p>
+            
+            <textarea
+              value={userCode}
+              onChange={(e) => setUserCode(e.target.value)}
+              placeholder="Write your Python code here..."
+              className="w-full h-64 p-4 font-mono text-sm border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            
+            <div className="flex space-x-3 mt-4">
+              <button
+                onClick={analyzeCode}
+                disabled={feedback?.type === 'loading'}
+                className="flex items-center space-x-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+              >
+                <CheckCircle className="w-5 h-5" />
+                <span>{feedback?.type === 'loading' ? 'Analyzing...' : 'Get AI Feedback'}</span>
+              </button>
+              
+              <button
+                onClick={() => setShowSolution(!showSolution)}
+                className="flex items-center space-x-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <Code className="w-5 h-5" />
+                <span>{showSolution ? 'Hide' : 'Show'} Solution</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Feedback */}
+          {feedback && feedback.type !== 'loading' && (
+            <div className={`border-l-4 p-4 rounded-r-lg ${
+              feedback.type === 'success' 
+                ? 'bg-green-50 border-green-500' 
+                : 'bg-red-50 border-red-500'
+            }`}>
+              <div className="flex items-start space-x-3">
+                {feedback.type === 'success' ? (
+                  <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                ) : (
+                  <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+                )}
+                <div className="flex-1">
+                  <h4 className={`font-bold mb-2 ${
+                    feedback.type === 'success' ? 'text-green-800' : 'text-red-800'
+                  }`}>
+                    AI Tutor Feedback
+                  </h4>
+                  <div className="text-gray-700 whitespace-pre-wrap">{feedback.message}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Solution */}
+          {showSolution && (
+            <div className="bg-gray-900 rounded-lg p-4 mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-bold text-yellow-400">Solution:</h4>
+                <Code className="w-5 h-5 text-yellow-400" />
+              </div>
+              <pre className="text-yellow-300 text-sm overflow-x-auto">
+                <code>{exercise.solution}</code>
+              </pre>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex justify-between">
+          <button
+            onClick={() => {
+              if (currentExercise > 0) {
+                setCurrentExercise(currentExercise - 1);
+                setUserCode('');
+                setFeedback(null);
+                setShowSolution(false);
+              }
+            }}
+            disabled={currentExercise === 0}
+            className="flex items-center space-x-2 bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span>Previous Exercise</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              if (currentExercise < pythonExercises.length - 1) {
+                setCurrentExercise(currentExercise + 1);
+                setUserCode('');
+                setFeedback(null);
+                setShowSolution(false);
+              }
+            }}
+            disabled={currentExercise === pythonExercises.length - 1}
+            className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            <span>Next Exercise</span>
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const VocabularyPage = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Add New Term</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <select
+            value={newTerm.category}
+            onChange={(e) => setNewTerm({ ...newTerm, category: e.target.value })}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="python">Python/AI</option>
+            <option value="web">HTML/CSS/Web</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Term"
+            value={newTerm.term}
+            onChange={(e) => setNewTerm({ ...newTerm, term: e.target.value })}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <input
+          type="text"
+          placeholder="Definition"
+          value={newTerm.definition}
+          onChange={(e) => setNewTerm({ ...newTerm, definition: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
+        />
+        <input
+          type="text"
+          placeholder="Rationale for usage"
+          value={newTerm.rationale}
+          onChange={(e) => setNewTerm({ ...newTerm, rationale: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
+        />
+        <button
+          onClick={addVocabTerm}
+          className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+        >
+          <Plus className="w-5 h-5" />
+          <span>Add Term</span>
+        </button>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+          <Code className="w-6 h-6 text-blue-600" />
+          <span>Python & AI Terminology</span>
+        </h2>
+        <div className="grid gap-4">
+          {pythonVocab.map((item, idx) => (
+            <div key={idx} className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+              <h3 className="font-bold text-lg text-gray-800 mb-1">{item.term}</h3>
+              <p className="text-gray-700 mb-2">{item.definition}</p>
+              <p className="text-sm text-blue-700 italic">Rationale: {item.rationale}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+          <BookOpen className="w-6 h-6 text-purple-600" />
+          <span>HTML & CSS Terminology</span>
+        </h2>
+        <div className="grid gap-4">
+          {webVocab.map((item, idx) => (
+            <div key={idx} className="border-l-4 border-purple-500 bg-purple-50 p-4 rounded-r-lg">
+              <h3 className="font-bold text-lg text-gray-800 mb-1">{item.term}</h3>
+              <p className="text-gray-700 mb-2">{item.definition}</p>
+              <p className="text-sm text-purple-700 italic">Rationale: {item.rationale}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const FoundationsPage = () => (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+        <h2 className="text-3xl font-bold mb-2">Coding Foundations</h2>
+        <p className="text-blue-100">Master the building blocks of programming and web development</p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+            <Code className="w-6 h-6 text-blue-600" />
+            <span>Python Fundamentals</span>
+          </h3>
+          <ul className="space-y-3">
+            <li className="flex items-start space-x-2">
+              <span className="text-blue-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">Variables & Data Types:</strong>
+                <p className="text-gray-600 text-sm">Understanding integers, strings, floats, and booleans</p>
+              </div>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-blue-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">Control Flow:</strong>
+                <p className="text-gray-600 text-sm">If statements, loops (for/while), and conditional logic</p>
+              </div>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-blue-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">Functions & Modules:</strong>
+                <p className="text-gray-600 text-sm">Creating reusable code and importing libraries</p>
+              </div>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-blue-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">Data Structures:</strong>
+                <p className="text-gray-600 text-sm">Lists, dictionaries, tuples, and sets</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+            <BookOpen className="w-6 h-6 text-purple-600" />
+            <span>Web Development Basics</span>
+          </h3>
+          <ul className="space-y-3">
+            <li className="flex items-start space-x-2">
+              <span className="text-purple-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">HTML Structure:</strong>
+                <p className="text-gray-600 text-sm">Semantic elements, forms, and document structure</p>
+              </div>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-purple-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">CSS Styling:</strong>
+                <p className="text-gray-600 text-sm">Selectors, properties, colors, and typography</p>
+              </div>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-purple-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">Layout Techniques:</strong>
+                <p className="text-gray-600 text-sm">Flexbox and Grid for modern layouts</p>
+              </div>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-purple-600 font-bold">•</span>
+              <div>
+                <strong className="text-gray-800">Responsive Design:</strong>
+                <p className="text-gray-600 text-sm">Media queries and mobile-first approach</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Hands-On HTML Example */}
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+          <Code className="w-6 h-6 text-green-600" />
+          <span>Hands-On HTML Example: Build a Profile Card</span>
+        </h3>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="font-semibold text-gray-700 mb-2">HTML Code:</h4>
+            <pre className="bg-gray-900 text-green-300 p-4 rounded-lg text-sm overflow-x-auto">
+{`<!DOCTYPE html>
+<html>
+<head>
+  <title>My Profile</title>
+</head>
+<body>
+  <div class="profile-card">
+    <img src="avatar.jpg" alt="Profile">
+    <h1>Your Name</h1>
+    <p>AI Developer in Training</p>
+    <button>Connect</button>
+  </div>
+</body>
+</html>`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-gray-700 mb-2">Live Preview:</h4>
+            <div className="border-2 border-gray-300 rounded-lg p-4 bg-white">
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full mx-auto mb-3"></div>
+                <h1 className="text-xl font-bold text-gray-800">Your Name</h1>
+                <p className="text-gray-600 mb-3">AI Developer in Training</p>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Connect</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 bg-blue-50 border-l-4 border-blue-500 p-3">
+          <p className="text-sm text-gray-700">
+            <strong>Your Task:</strong> Modify this HTML to add your school (in a paragraph tag) and change the button text to "View Portfolio"
+          </p>
+        </div>
+      </div>
+
+      {/* Hands-On CSS Example */}
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+          <Code className="w-6 h-6 text-purple-600" />
+          <span>Hands-On CSS Example: Style Your Profile Card</span>
+        </h3>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="font-semibold text-gray-700 mb-2">CSS Code:</h4>
+            <pre className="bg-gray-900 text-purple-300 p-4 rounded-lg text-sm overflow-x-auto">
+{`.profile-card {
+  background: linear-gradient(
+    135deg, #667eea 0%, #764ba2 100%
+  );
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.profile-card img {
+  width: 100px;
+  border-radius: 50%;
+  border: 4px solid white;
+}
+
+.profile-card button {
+  background: white;
+  color: #667eea;
+  padding: 10px 30px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.profile-card button:hover {
+  transform: scale(1.05);
+}`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-gray-700 mb-2">Styled Result:</h4>
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-8 text-white text-center shadow-2xl">
+              <div className="w-24 h-24 bg-white rounded-full mx-auto mb-4 border-4 border-white flex items-center justify-center text-indigo-600 font-bold text-2xl">
+                You
+              </div>
+              <h1 className="text-2xl font-bold mb-2">Your Name</h1>
+              <p className="text-purple-200 mb-4">AI Developer in Training</p>
+              <button className="bg-white text-indigo-600 px-8 py-3 rounded-full font-bold hover:scale-105 transform transition-transform">
+                Connect
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 bg-purple-50 border-l-4 border-purple-500 p-3">
+          <p className="text-sm text-gray-700">
+            <strong>Your Task:</strong> Change the gradient colors to green and blue, and make the border-radius of the card 20px instead of 15px
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Building Responsive Websites</h3>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
+            <h4 className="font-bold text-blue-800 mb-2">Mobile First</h4>
+            <p className="text-sm text-gray-700">Design for mobile devices first, then scale up to larger screens using progressive enhancement</p>
+            <div className="mt-3 bg-white p-2 rounded text-xs font-mono text-blue-700">
+              @media (min-width: 768px) &#123; ... &#125;
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
+            <h4 className="font-bold text-purple-800 mb-2">Flexible Grids</h4>
+            <p className="text-sm text-gray-700">Use percentage-based widths and CSS Grid/Flexbox for layouts that adapt to any screen size</p>
+            <div className="mt-3 bg-white p-2 rounded text-xs font-mono text-purple-700">
+              display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg">
+            <h4 className="font-bold text-indigo-800 mb-2">Media Queries</h4>
+            <p className="text-sm text-gray-700">Apply different styles based on device characteristics like width, height, and orientation</p>
+            <div className="mt-3 bg-white p-2 rounded text-xs font-mono text-indigo-700">
+              @media (max-width: 600px) &#123; font-size: 14px; &#125;
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Modern Web Design Fundamentals</h3>
+        <div className="space-y-4">
+          <div className="border-l-4 border-green-500 bg-green-50 p-4 rounded-r-lg">
+            <h4 className="font-bold text-gray-800 mb-2">User Experience (UX) Principles</h4>
+            <p className="text-gray-700">Focus on intuitive navigation, clear hierarchy, accessibility, and user-centered design thinking</p>
+          </div>
+          <div className="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded-r-lg">
+            <h4 className="font-bold text-gray-800 mb-2">Visual Design Theory</h4>
+            <p className="text-gray-700">Master color theory, typography, whitespace, contrast, and visual balance for professional interfaces</p>
+          </div>
+          <div className="border-l-4 border-red-500 bg-red-50 p-4 rounded-r-lg">
+            <h4 className="font-bold text-gray-800 mb-2">Performance Optimization</h4>
+            <p className="text-gray-700">Optimize images, minimize code, use caching, and implement lazy loading for fast page speeds</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const ResourcesPage = () => (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+        <h2 className="text-3xl font-bold mb-2">Learning Resources</h2>
+        <p className="text-green-100">Your curated path to AI mastery</p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Current Reading List</h3>
+        <div className="space-y-3">
+          <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+            <BookOpen className="w-6 h-6 text-blue-600" />
+            <div>
+              <h4 className="font-bold text-gray-800">AI Next Step Prompt Engineering</h4>
+              <p className="text-sm text-gray-600">by Dawn O'Neal</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg">
+            <BookOpen className="w-6 h-6 text-purple-600" />
+            <div>
+              <h4 className="font-bold text-gray-800">The Science of Self-Discipline</h4>
+              <p className="text-sm text-gray-600">by Peter Hollins</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Active Subscriptions</h3>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="border-2 border-blue-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+            <h4 className="font-bold text-blue-700 mb-2">CodeAcademy</h4>
+            <p className="text-sm text-gray-600">Interactive coding lessons and projects</p>
+          </div>
+          <div className="border-2 border-purple-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+            <h4 className="font-bold text-purple-700 mb-2">DeepLearning.AI</h4>
+            <p className="text-sm text-gray-600">AI and machine learning courses</p>
+          </div>
+          <div className="border-2 border-green-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+            <h4 className="font-bold text-green-700 mb-2">Coursera</h4>
+            <p className="text-sm text-gray-600">University-level online courses</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Weekly Schedule</h3>
+        <div className="space-y-3">
+          <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-bold text-orange-800">Daily (4:30 PM onwards)</h4>
+                <p className="text-sm text-gray-700">Evening study sessions after work</p>
+              </div>
+              <Calendar className="w-6 h-6 text-orange-600" />
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-bold text-purple-800">Thursday Nights</h4>
+                <p className="text-sm text-gray-700">AI Graduate Course: 5:30 PM - 8:00 PM</p>
+              </div>
+              <GraduationCap className="w-6 h-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Recommended Study Approach</h3>
+        <div className="space-y-3">
+          <div className="flex items-start space-x-3">
+            <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">1</div>
+            <div>
+              <h4 className="font-bold text-gray-800">Morning Review (15 min)</h4>
+              <p className="text-sm text-gray-600">Review vocabulary and concepts before work</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">2</div>
+            <div>
+              <h4 className="font-bold text-gray-800">Evening Practice (1-2 hours)</h4>
+              <p className="text-sm text-gray-600">CodeAcademy exercises or course work after 4:30 PM</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">3</div>
+            <div>
+              <h4 className="font-bold text-gray-800">Weekend Projects</h4>
+              <p className="text-sm text-gray-600">Build personal projects applying learned concepts</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">4</div>
+            <div>
+              <h4 className="font-bold text-gray-800">Regular Reading</h4>
+              <p className="text-sm text-gray-600">30 minutes daily from your book list</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <NavBar />
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {currentPage === 'dashboard' && <CalendarView />}
+        {currentPage === 'practice' && <PracticeLabPage />}
+        {currentPage === 'vocabulary' && <VocabularyPage />}
+        {currentPage === 'foundations' && <FoundationsPage />}
+        {currentPage === 'resources' && <ResourcesPage />}
+      </div>
+    </div>
+  );
+};
+
+export default AICareerTracker;
